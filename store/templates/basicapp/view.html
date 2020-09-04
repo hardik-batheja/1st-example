@@ -1,0 +1,24 @@
+{% extends 'basicapp/base.html' %}
+{% block bodyblock %}
+
+{% if records %}    
+<table>
+    <thead>
+        <th>Item</th>
+        <th>Dealer</th>
+        <th>Rate</th>
+        <th>MRP</th>
+    </thead>
+    {% for row in records %}
+        <tr>
+            <td>{{row.item}}</td>
+            <td>{{row.dealer}}</td>
+            <td>{{row.rate}}</td>
+            <td>{{row.mrp}}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h1>No Records Found!</h1>
+{% endif %}
+{% endblock bodyblock %}
