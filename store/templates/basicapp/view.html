@@ -1,7 +1,14 @@
 {% extends 'basicapp/base.html' %}
 {% block bodyblock %}
 
-{% if records %}    
+{% if records %}
+
+{% for row in dealers %}
+    <h2> {{row}} </h2>
+{% endfor %}
+    
+
+
 <table>
     <thead>
         <th>Item</th>

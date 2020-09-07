@@ -20,7 +20,7 @@ from django.urls import path, include
 from basicapp import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.index.as_view(),name='index'),
     path('admin/', admin.site.urls),
     path('harry/', include('basicapp.urls')),
     path('logout/', views.user_logout, name='logout'),

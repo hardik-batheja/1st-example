@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.views.generic import View,TemplateView,ListView,DetailView
 # Create your views here.
 from django.shortcuts import render
 from basicapp.forms import UserForm, UserProfileInfoForm,EntryForm,DealerForm
@@ -13,9 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 # Create your views here.
-def index(request):
-    return render(request, 'basicapp/index.html')
-
+class index(TemplateView):
+    template_name='basicapp/index.html'
 
 @login_required
 def special(request):
@@ -125,42 +124,39 @@ def user_login(request):
         return render(request, 'basicapp/login.html', {})
 
 
-def viewdb(request):
-    if request.user.is_authenticated:
-        itemlist=UserStock.objects.filter(owner__username=request.user.username).order_by('dealer')
-        contdict={'records': itemlist}
-        return render(request, 'basicapp/view.html',contdict)
-    else:
-        return render(request,'basicapp/login.html')
-
-
-def dbms(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            entry_form = EntryForm()
-            if entry_form.is_valid():
-                # entry=entry_form.save(commit=False)
-                # entry.owner=request.user
-                entry_form.save()
-            else:
-                print(entry_form.errors)
+class viewdb(View):
+    def get(self,request,*args,**kwargs):
+        if request.user.is_authenticated:
+            itemlist=UserStock.objects.filter(owner__username=request.user.username).order_by('dealer')
+            dealerlist = UserDealers.objects.filter(owner__username=request.user.username)
+            contdict={'records': itemlist,'dealers': dealerlist}
+            return render(request, 'basicapp/view.html',contdict)
         else:
-            entry_form = EntryForm(request.user)
-        if request.method=='POST':
-            user = User.objects.filter(id=request.user.id)
-            dealer_form=DealerForm(user,request.POST)
-            if dealer_form.is_valid():
-                # dealer = dealer_form.save(commit=False)
-                # dealer.owner = request.user
-                dealer_form.save()
-            else:
-                print(dealer_form.errors,"error")
-        else:
+            return render(request,'basicapp/login.html')
+
+class dbms(View):
+    def get(self,request,*args,**kwargs):
+        if request.user.is_authenticated:
+            entry_form = EntryForm(request.user, request.POST)
             dealer_form = DealerForm()
-        return render(request, 'basicapp/dbms.html',{'entry_form': entry_form,'dealer_form': dealer_form})
-    else:
-        return render(request, 'basicapp/login.html')
-
+            return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form})
+        else:
+            return render(request, 'basicapp/login.html')
+    def post(self,request,*args,**kwargs):
+        entry_form = EntryForm(request.user, request.POST)
+        dealer_form = DealerForm(request.POST)
+        if 'add_d' in request.POST:
+            if dealer_form.is_valid():
+                dealer=dealer_form.save(commit=False)
+                dealer.owner=request.user
+                dealer.save()
+        if 'add_e' in request.POST:
+            if entry_form.is_valid():
+                entry=entry_form.save(commit=False)
+                entry.owner=request.user
+                entry.save()
+        return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form})
+        
 
 def createorder(request):
     if request.user.is_authenticated:

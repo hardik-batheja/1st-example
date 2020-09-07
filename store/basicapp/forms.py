@@ -18,7 +18,7 @@ class UserProfileInfoForm(forms.ModelForm):
 
 class EntryForm(forms.ModelForm):
     def __init__(self,user,*args, **kwargs):
-        super(EntryForm,self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['dealer'].queryset = UserDealers.objects.filter(owner=user)
     class Meta():
         model=UserStock
@@ -33,7 +33,7 @@ class EntryForm(forms.ModelForm):
 
 class DealerForm(forms.ModelForm):
     dealer = forms.CharField(max_length=200,widget=forms.TextInput(attrs={'class': 'form-control'}))
-    contact = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    contact = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     class Meta():
         model=UserDealers
         fields=('dealer','contact')

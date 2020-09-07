@@ -1,11 +1,11 @@
 {% extends 'basicapp/base.html' %}
 {% block bodyblock %}
 <div class="row">
-<div class="jumbotron m-2 col-sm-2">
+<div class="jumbotron m-2 col-m-2">
     <form method="post" enctype="multipart/form-data">
         {{dealer_form.as_p}}
         {% csrf_token %}
-        <input type="submit" class="btn btn-primary" name="Add" value="Add Dealer">
+        <input type="submit" class="btn btn-primary" name="add_d" value="Add Dealer">
     </form>
 </div>
 <div class="jumbotron m-2 col-lg-9">
@@ -17,9 +17,9 @@
             {{ field.label_tag }}{{ field }}
         </div>
         {% endfor %}
-        <input type="submit" class="btn btn-primary mt-4 ml-1" name="Add" value="Add entry">
-        <input type="submit" class="btn btn-primary mt-4 ml-1 disabled" name="Update" value="Update Selected">
-        <input type="submit" class="btn btn-primary mt-4 ml-1 disabled" name="Delete" value="Delete Selected">
+        <input type="submit" class="btn btn-primary mt-4 ml-1" name="add_e" value="Add entry">
+        <input type="submit" class="btn btn-primary mt-4 ml-1 disabled" name="update_e" value="Update Selected">
+        <input type="submit" class="btn btn-primary mt-4 ml-1 disabled" name="delete_e" value="Delete Selected">
         </div>
     </form>
 </div></div>
