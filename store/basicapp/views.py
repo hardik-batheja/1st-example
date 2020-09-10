@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views.generic import View,TemplateView,ListView,DetailView
 # Create your views here.
 from django.shortcuts import render
-from basicapp.forms import UserForm, UserProfileInfoForm,EntryForm,DealerForm
+from basicapp.forms import UserForm, UserProfileInfoForm,EntryForm,DealerForm,EditForm
 from django.contrib import messages
-from basicapp.models import UserProfileInfo,UserDealers,UserStock
+from basicapp.models import UserProfileInfo,UserDealers,UserStock,RecycleBin
 # Extra Imports for the Login and Logout Capabilities
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
@@ -127,9 +127,8 @@ def user_login(request):
 class viewdb(View):
     def get(self,request,*args,**kwargs):
         if request.user.is_authenticated:
-            itemlist=UserStock.objects.filter(owner__username=request.user.username).order_by('dealer')
-            dealerlist = UserDealers.objects.filter(owner__username=request.user.username)
-            contdict={'records': itemlist,'dealers': dealerlist}
+            itemlist=UserStock.objects.filter(owner__username=request.user.username).order_by('dealer','item')
+            contdict={'records': itemlist}
             return render(request, 'basicapp/view.html',contdict)
         else:
             return render(request,'basicapp/login.html')
@@ -139,24 +138,64 @@ class dbms(View):
         if request.user.is_authenticated:
             entry_form = EntryForm(request.user, request.POST)
             dealer_form = DealerForm()
-            return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form})
+            itemlist=UserStock.objects.filter(owner__username=request.user.username).order_by('dealer','item')
+            return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form,'records':itemlist})
         else:
             return render(request, 'basicapp/login.html')
     def post(self,request,*args,**kwargs):
-        entry_form = EntryForm(request.user, request.POST)
-        dealer_form = DealerForm(request.POST)
+        
+        itemlist = UserStock.objects.filter(
+        owner__username=request.user.username).order_by('dealer', 'item')
         if 'add_d' in request.POST:
+            entry_form = EntryForm(request.user)
+            dealer_form = DealerForm(request.POST)
             if dealer_form.is_valid():
                 dealer=dealer_form.save(commit=False)
                 dealer.owner=request.user
                 dealer.save()
         if 'add_e' in request.POST:
+            entry_form = EntryForm(request.user, request.POST)
+            dealer_form = DealerForm()
             if entry_form.is_valid():
                 entry=entry_form.save(commit=False)
                 entry.owner=request.user
                 entry.save()
-        return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form})
-        
+        return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form, 'records': itemlist})
+
+def edit(request,id):
+    item = UserStock.objects.get(id=id)
+    if item.owner==request.user:
+        dealerlist = UserDealers.objects.filter(owner__username=request.user.username)
+        return render(request,'basicapp/edit.html',{'row': item,'dealers': dealerlist})
+    else:
+        return HttpResponse("Access Denied!")
+
+def update(request,id):
+    item = UserStock.objects.get(id=id)
+    if item.owner==request.user:
+        form=EditForm(request.POST,instance=item)
+        if form.is_valid():
+            print("YES")
+            updateform=form.save(commit=False)
+            updateform.dealer.dealer=request.POST.get('dealer')
+            updateform.user=request.user
+            updateform.save()
+            return redirect("/harry/view/")
+        else:
+            print(form.errors)
+        return render(request, 'basicapp/edit.html', {'row': item})
+    else:
+        return HttpResponse("Access Denied!")
+
+def bin(request,id):
+    item = UserStock.objects.get(id=id)
+    if item.owner == request.user:
+        binitem = RecycleBin(owner=request.user, dealer=item.dealer,item=item.item, company=item.company, rate=item.rate, mrp=item.mrp)
+        binitem.save()
+        item.delete()
+        return redirect("/harry/view/")
+    else:
+        return HttpResponse("Access Denied!")
 
 def createorder(request):
     if request.user.is_authenticated:

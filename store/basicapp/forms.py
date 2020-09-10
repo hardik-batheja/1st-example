@@ -31,6 +31,18 @@ class EntryForm(forms.ModelForm):
             'mrp': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+
+class EditForm(forms.ModelForm):
+    class Meta():
+        model = UserStock
+        fields = ('item', 'company', 'rate', 'mrp')
+        widgets = {
+            'item': forms.TextInput(),
+            'company': forms.TextInput(),
+            'rate': forms.NumberInput(),
+            'mrp': forms.NumberInput(),
+        }
+
 class DealerForm(forms.ModelForm):
     dealer = forms.CharField(max_length=200,widget=forms.TextInput(attrs={'class': 'form-control'}))
     contact = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))

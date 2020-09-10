@@ -27,3 +27,14 @@ class UserStock(models.Model):
 
     def __str__(self):
         return self.item
+
+class RecycleBin(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    dealer = models.ForeignKey(UserDealers, on_delete=models.CASCADE)
+    item = models.CharField(max_length=200)
+    company = models.CharField(max_length=200, blank=True, default=None)
+    rate = models.FloatField(blank=True, default=None)
+    mrp = models.FloatField(blank=True, default=None)
+
+    def __str__(self):
+        return self.item

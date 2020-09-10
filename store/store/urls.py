@@ -25,4 +25,7 @@ urlpatterns = [
     path('harry/', include('basicapp.urls')),
     path('logout/', views.user_logout, name='logout'),
     path('special', views.special, name='special'),
+    path('edit/<int:id>', views.edit),
+    path('update/<int:id>', views.update),
+    path('delete/<int:id>', views.bin),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
