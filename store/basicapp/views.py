@@ -159,6 +159,8 @@ class dbms(View):
             if entry_form.is_valid():
                 entry=entry_form.save(commit=False)
                 entry.owner=request.user
+                entry.item = entry.item.upper()
+                entry.company = entry.company.upper()
                 entry.save()
         return render(request, 'basicapp/dbms.html', {'entry_form': entry_form, 'dealer_form': dealer_form, 'records': itemlist})
 
@@ -179,6 +181,8 @@ def update(request,id):
             updateform=form.save(commit=False)
             updateform.dealer.dealer=request.POST.get('dealer')
             updateform.user=request.user
+            updateform.item = updateform.item.upper()
+            updateform.company = updateform.company.upper()
             updateform.save()
             return redirect("/harry/view/")
         else:
