@@ -1,14 +1,15 @@
 {% extends 'basicapp/base.html' %}
 {% block bodyblock %}
 <div class="jumbotron">
-    <h1>please login</h1>
+    <h1>Please login</h1>
     <form action="{% url 'basicapp:user_login' %}" method="POST">
         {% csrf_token %}
         <label for="username">Username:</label>
-        <input type="text" name="username" placeholder="Enter Username">
+        <input class="form-control" type="text" name="username" placeholder="Enter Username">
         <label for="password">Password:</label>
-        <input type="password" name="password" placeholder="Enter Password">
-        <input type="submit" value="Login">
+        <input class="form-control mb-3" type="password" name="password" placeholder="Enter Password">
+        <input class="btn btn-primary" type="submit" value="Login"> OR
+        <a class="btn btn-outline-success" href="{% url 'basicapp:register' %}">Sign-Up</a>
     </form>
 </div>
 {% endblock bodyblock %}

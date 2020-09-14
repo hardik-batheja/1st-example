@@ -5,13 +5,13 @@
     <h1>Thank u for registration.<br>
     Now you can login.</h1>
     {% else %}
-    <h1>Register Here!</h1>
-    <h3>Fill out the form</h3>
+    <h1>Register Here!</h1><br>
+    <h3>Fill out the form</h3><br>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ user_form.as_p }}
         {{ profile_form.as_p }}
-        <input type="submit" name="" value="Register">
+        <input class="btn btn-primary" type="submit" name="" value="Register">
     </form>
     {% endif %}
 </div>
